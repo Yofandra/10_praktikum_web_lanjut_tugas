@@ -6,6 +6,7 @@ use App\Models\Mahasiswa;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Collection\links;
 use App\Models\Kelas;
+use Illuminate\Support\Facades\Storage;
 
 class MahasiswaController extends Controller
 {
@@ -48,10 +49,14 @@ class MahasiswaController extends Controller
      */
     public function store(Request $request)
     {
+        if($request->file('image')){
+            $image_name = $request->file('image')->store('image', 'public');
+        }
         //melakukan validasi data
         $request->validate([
             'Nim' => 'required',
             'Nama' => 'required',
+            'image' => 'required',
             'Email' => 'required',
             'Tanggal_Lahir' => 'required',
             'Kelas' => 'required',
@@ -63,6 +68,7 @@ class MahasiswaController extends Controller
         $mahasiswa = new Mahasiswa;
         $mahasiswa->Nim = $request->get('Nim');
         $mahasiswa->Nama = $request->get('Nama');
+        $mahasiswa->Foto = $image_name;
         $mahasiswa->Email = $request->get('Email');
         $mahasiswa->Tanggal_Lahir = $request->get('Tanggal_Lahir');
         $mahasiswa->Jurusan = $request->get('Jurusan');
@@ -122,6 +128,7 @@ class MahasiswaController extends Controller
         $request->validate([
             'Nim' => 'required',
             'Nama' => 'required',
+            'image' => 'required',
             'Email' => 'required',
             'Tanggal_Lahir' => 'required',
             'Kelas' => 'required',
@@ -133,6 +140,12 @@ class MahasiswaController extends Controller
         $mahasiswa = Mahasiswa::with('kelas')->where('nim', $Nim)->first();
         $mahasiswa->Nim = $request->get('Nim');
         $mahasiswa->Nama = $request->get('Nama');
+
+        if($mahasiswa->Foto && file_exists(storage_path('app/public/' . $mahasiswa->Foto))) {
+            Storage::delete('public/' . $mahasiswa->Foto);
+        }
+        $image_name = $request->file('image')->store('image', 'public');
+        $mahasiswa->Foto = $image_name;
         $mahasiswa->Email = $request->get('Email');
         $mahasiswa->Tanggal_Lahir = $request->get('Tanggal_Lahir');
         $mahasiswa->Jurusan = $request->get('Jurusan');
