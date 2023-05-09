@@ -35,7 +35,5 @@
             @endforeach
         </tbody>
     </table>
-    <center><a href="/mahasiswa/cetak_pdf/{{$Mahasiswa->Nim}}" class="btn btn-danger">Cetak ke PDF</a><br><br></center>
-    <a href="{{ route('mahasiswa.index') }}" class="btn btn-success">Kembali</a>
 </div>
 @endsection

@@ -6,7 +6,9 @@ use App\Models\Mahasiswa;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Collection\links;
 use App\Models\Kelas;
+use App\Models\Mahasiswa_MataKuliah;
 use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class MahasiswaController extends Controller
 {
@@ -173,5 +175,12 @@ class MahasiswaController extends Controller
         Mahasiswa::find($Nim)->delete();
         return redirect()->route('mahasiswa.index')
             ->with('success', 'Mahasiswa Berhasil Dihapus');
+    }
+
+    public function cetak_pdf($nim){
+        $Mahasiswa = Mahasiswa::find($nim);
+        $mahasiswa = Mahasiswa_MataKuliah::where('mahasiswa_id', $nim)->get();
+        $pdf = PDF::loadview('mahasiswa.khs_pdf', compact('Mahasiswa', 'mahasiswa'));
+        return $pdf->stream();
     }
 }
